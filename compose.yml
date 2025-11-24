@@ -1,0 +1,10 @@
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: gametracker
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
