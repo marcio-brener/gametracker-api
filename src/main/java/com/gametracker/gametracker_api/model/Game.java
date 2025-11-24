@@ -16,7 +16,6 @@ import jakarta.persistence.OneToOne;
 
 @Entity
 public class Game {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
