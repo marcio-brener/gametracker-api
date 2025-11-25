@@ -2,6 +2,8 @@ package com.gametracker.gametracker_api.service;
 
 import com.gametracker.gametracker_api.model.Genre;
 import com.gametracker.gametracker_api.repository.GenreRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -18,7 +20,14 @@ public class GenreService {
         return repo.findAll();
     }
 
-    public Genre salvar(Genre g) {
-        return repo.save(g);
+    public ResponseEntity<?> salvar(Genre g) {
+        // Validação para o campo nome
+        if (g.getNome() == null || g.getNome().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("O campo 'nome' é obrigatório e não pode estar vazio");
+        }
+        
+        Genre savedGenre = repo.save(g);
+        return ResponseEntity.ok(savedGenre);
     }
 }
