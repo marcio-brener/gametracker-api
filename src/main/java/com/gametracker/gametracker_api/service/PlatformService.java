@@ -106,4 +106,47 @@ public class PlatformService {
         Platform platform = platformOpt.get();
         return ResponseEntity.ok(platform.getGames());
     }
+
+    // Full update for Platform (PUT)
+    public ResponseEntity<?> update(Long id, Platform platformUpdate) {
+        Optional<Platform> platformOpt = repo.findById(id);
+
+        if (platformOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Platform com ID " + id + " não encontrada");
+        }
+
+        // Validation for nome field
+        if (platformUpdate.getNome() == null || platformUpdate.getNome().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("O campo 'nome' é obrigatório e não pode estar vazio");
+        }
+
+        Platform existingPlatform = platformOpt.get();
+        existingPlatform.setNome(platformUpdate.getNome());
+
+        Platform updatedPlatform = repo.save(existingPlatform);
+        return ResponseEntity.ok(updatedPlatform);
+    }
+
+    // Delete Platform
+    public ResponseEntity<?> delete(Long id) {
+        Optional<Platform> platformOpt = repo.findById(id);
+
+        if (platformOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Platform com ID " + id + " não encontrada");
+        }
+
+        Platform platform = platformOpt.get();
+
+        // Check if platform is being used by any game
+        if (!platform.getGames().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Não é possível deletar a platform pois ela está sendo usada por " + platform.getGames().size() + " game(s)");
+        }
+
+        repo.deleteById(id);
+        return ResponseEntity.ok("Platform deletada com sucesso");
+    }
 }

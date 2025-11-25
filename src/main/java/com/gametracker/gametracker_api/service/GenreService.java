@@ -110,4 +110,49 @@ public class GenreService {
 
         return ResponseEntity.ok(gameOpt.get());
     }
+
+    // Full update for Genre (PUT)
+    public ResponseEntity<?> update(Long id, Genre genreUpdate) {
+        Optional<Genre> genreOpt = repo.findById(id);
+
+        if (genreOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Genre com ID " + id + " não encontrado");
+        }
+
+        // Validation for nome field
+        if (genreUpdate.getNome() == null || genreUpdate.getNome().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("O campo 'nome' é obrigatório e não pode estar vazio");
+        }
+
+        Genre existingGenre = genreOpt.get();
+        existingGenre.setNome(genreUpdate.getNome());
+
+        Genre updatedGenre = repo.save(existingGenre);
+        return ResponseEntity.ok(updatedGenre);
+    }
+
+    // Delete Genre
+    public ResponseEntity<?> delete(Long id) {
+        Optional<Genre> genreOpt = repo.findById(id);
+
+        if (genreOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Genre com ID " + id + " não encontrado");
+        }
+
+        // Check if genre is being used by any game
+        List<Game> gamesWithGenre = gameRepository.findAll().stream()
+            .filter(game -> game.getGenre() != null && game.getGenre().getId().equals(id))
+            .toList();
+
+        if (!gamesWithGenre.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Não é possível deletar o genre pois ele está sendo usado por " + gamesWithGenre.size() + " game(s)");
+        }
+
+        repo.deleteById(id);
+        return ResponseEntity.ok("Genre deletado com sucesso");
+    }
 }

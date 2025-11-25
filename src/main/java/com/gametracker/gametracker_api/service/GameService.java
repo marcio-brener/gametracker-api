@@ -150,4 +150,51 @@ public class GameService {
         Game game = gameOpt.get();
         return ResponseEntity.ok(game.getPlatforms());
     }
+
+    // Partial update for Game (PATCH)
+    public ResponseEntity<?> updatePartial(Long id, Game gameUpdate) {
+        Optional<Game> gameOpt = repo.findById(id);
+
+        if (gameOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Game com ID " + id + " não encontrado");
+        }
+
+        Game existingGame = gameOpt.get();
+
+        // Update only non-null fields
+        if (gameUpdate.getTitulo() != null && !gameUpdate.getTitulo().trim().isEmpty()) {
+            existingGame.setTitulo(gameUpdate.getTitulo());
+        }
+
+        if (gameUpdate.getDescricao() != null && !gameUpdate.getDescricao().trim().isEmpty()) {
+            existingGame.setDescricao(gameUpdate.getDescricao());
+        }
+
+        if (gameUpdate.getGenre() != null) {
+            Optional<Genre> genreOpt = genreRepository.findById(gameUpdate.getGenre().getId());
+            if (genreOpt.isPresent()) {
+                existingGame.setGenre(genreOpt.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Genre com ID " + gameUpdate.getGenre().getId() + " não encontrado");
+            }
+        }
+
+        Game updatedGame = repo.save(existingGame);
+        return ResponseEntity.ok(updatedGame);
+    }
+
+    // Delete Game
+    public ResponseEntity<?> delete(Long id) {
+        Optional<Game> gameOpt = repo.findById(id);
+
+        if (gameOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Game com ID " + id + " não encontrado");
+        }
+
+        repo.deleteById(id);
+        return ResponseEntity.ok("Game deletado com sucesso");
+    }
 }

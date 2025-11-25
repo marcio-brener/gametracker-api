@@ -83,4 +83,51 @@ public class AchievementService {
 
         return ResponseEntity.ok("Achievement desvinculado do game com sucesso");
     }
+
+    // Partial update for Achievement (PATCH)
+    public ResponseEntity<?> updatePartial(Long id, Achievement achievementUpdate) {
+        Optional<Achievement> achievementOpt = repo.findById(id);
+
+        if (achievementOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Achievement com ID " + id + " não encontrado");
+        }
+
+        Achievement existingAchievement = achievementOpt.get();
+
+        // Update only non-null fields
+        if (achievementUpdate.getNome() != null && !achievementUpdate.getNome().trim().isEmpty()) {
+            existingAchievement.setNome(achievementUpdate.getNome());
+        }
+
+        if (achievementUpdate.getDescricao() != null && !achievementUpdate.getDescricao().trim().isEmpty()) {
+            existingAchievement.setDescricao(achievementUpdate.getDescricao());
+        }
+
+        if (achievementUpdate.getGame() != null) {
+            Optional<Game> gameOpt = gameRepository.findById(achievementUpdate.getGame().getId());
+            if (gameOpt.isPresent()) {
+                existingAchievement.setGame(gameOpt.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Game com ID " + achievementUpdate.getGame().getId() + " não encontrado");
+            }
+        }
+
+        Achievement updatedAchievement = repo.save(existingAchievement);
+        return ResponseEntity.ok(updatedAchievement);
+    }
+
+    // Delete Achievement
+    public ResponseEntity<?> delete(Long id) {
+        Optional<Achievement> achievementOpt = repo.findById(id);
+
+        if (achievementOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Achievement com ID " + id + " não encontrado");
+        }
+
+        repo.deleteById(id);
+        return ResponseEntity.ok("Achievement deletado com sucesso");
+    }
 }

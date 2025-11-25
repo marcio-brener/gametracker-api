@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,5 +45,17 @@ public class AchievementController {
     @DeleteMapping("/{achievementId}/game")
     public ResponseEntity<?> unbindFromGame(@PathVariable Long achievementId) {
         return service.unbindFromGame(achievementId);
+    }
+
+    // Partial update Achievement (PATCH)
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updatePartial(@PathVariable Long id, @RequestBody Achievement achievement) {
+        return service.updatePartial(id, achievement);
+    }
+
+    // Delete Achievement
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        return service.delete(id);
     }
 }
