@@ -2,6 +2,7 @@ package com.gametracker.gametracker_api.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,7 +28,7 @@ public class GameController {
     }
 
     @PostMapping
-    public Game criar(@RequestBody Game game) {
+    public ResponseEntity<?> criar(@RequestBody Game game) {
         return service.salvar(game);
     }
 }
