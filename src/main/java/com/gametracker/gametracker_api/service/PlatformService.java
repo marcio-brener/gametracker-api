@@ -2,6 +2,8 @@ package com.gametracker.gametracker_api.service;
 
 import com.gametracker.gametracker_api.model.Platform;
 import com.gametracker.gametracker_api.repository.PlatformRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -18,7 +20,14 @@ public class PlatformService {
         return repo.findAll();
     }
 
-    public Platform salvar(Platform p) {
-        return repo.save(p);
+    public ResponseEntity<?> salvar(Platform p) {
+        // Validação para o campo nome
+        if (p.getNome() == null || p.getNome().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("O campo 'nome' é obrigatório e não pode estar vazio");
+        }
+        
+        Platform savedPlatform = repo.save(p);
+        return ResponseEntity.ok(savedPlatform);
     }
 }
