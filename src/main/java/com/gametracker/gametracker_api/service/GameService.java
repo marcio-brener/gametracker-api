@@ -152,7 +152,7 @@ public class GameService {
     }
 
     // Partial update for Game (PATCH)
-    public ResponseEntity<?> updatePartial(Long id, Game gameUpdate) {
+    public ResponseEntity<?> update(Long id, Game gameUpdate) {
         Optional<Game> gameOpt = repo.findById(id);
 
         if (gameOpt.isEmpty()) {

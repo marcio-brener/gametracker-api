@@ -85,7 +85,7 @@ public class AchievementService {
     }
 
     // Partial update for Achievement (PATCH)
-    public ResponseEntity<?> updatePartial(Long id, Achievement achievementUpdate) {
+    public ResponseEntity<?> update(Long id, Achievement achievementUpdate) {
         Optional<Achievement> achievementOpt = repo.findById(id);
 
         if (achievementOpt.isEmpty()) {
