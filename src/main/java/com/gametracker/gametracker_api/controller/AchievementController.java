@@ -3,7 +3,9 @@ package com.gametracker.gametracker_api.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,5 +32,17 @@ public class AchievementController {
     @PostMapping
     public ResponseEntity<?> criar(@RequestBody Achievement a) {
         return service.salvar(a);
+    }
+
+    // Bind Achievement to Game
+    @PostMapping("/{achievementId}/game/{gameId}")
+    public ResponseEntity<?> bindToGame(@PathVariable Long achievementId, @PathVariable Long gameId) {
+        return service.bindToGame(achievementId, gameId);
+    }
+
+    // Unbind Achievement from Game
+    @DeleteMapping("/{achievementId}/game")
+    public ResponseEntity<?> unbindFromGame(@PathVariable Long achievementId) {
+        return service.unbindFromGame(achievementId);
     }
 }
